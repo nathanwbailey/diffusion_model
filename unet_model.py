@@ -4,7 +4,7 @@ from model_building_blocks import ResidualBlock
 from model_building_blocks import UpBlock
 from model_building_blocks import DownBlock
 
-def create_unet_model(image_size: int, block_depth: int, filter_list: list[int]) -> keras.models.Model:
+def create_unet_model(image_size: int, block_depth: int, filter_list: list[int], noise_embedding_size: int) -> keras.models.Model:
 
     assert len(filter_list) == 4
 
@@ -12,7 +12,7 @@ def create_unet_model(image_size: int, block_depth: int, filter_list: list[int])
     x = keras.layers.Conv2D(32, kernel_size=1)(noisy_images)
 
     noise_variances = keras.layers.Input(shape=(1,1,1))
-    noise_embedding = keras.layers.Lambda(sinusoidal_embedding)(noise_variances)
+    noise_embedding = keras.layers.Lambda(sinusoidal_embedding, arguments={"noise_embedding_size": noise_embedding_size})(noise_variances)
     noise_embedding = keras.layers.UpSampling2D(size=image_size, interpolation="nearest")(noise_embedding)
 
     x = keras.layers.Concatenate()([x, noise_embedding])
@@ -24,9 +24,9 @@ def create_unet_model(image_size: int, block_depth: int, filter_list: list[int])
     
     for _ in range(2):
         x = ResidualBlock(width=filter_list[-1], kernel_size=3, padding="same")(x)
-    
-    for idx in filter_list[:-1][::-1]:
-        x = UpBlock(block_depth=block_depth, width=filter_list[idx], kernel_size=3, padding="same")([x, skips_total])
+    for filter_width in filter_list[:-1][::-1]:
+        x = UpBlock(block_depth=block_depth, width=filter_width, kernel_size=3, padding="same")([x, [skips_total.pop(), skips_total.pop()]])
+        
     
     x = keras.layers.Conv2D(3, kernel_size=1, kernel_initializer="zeros")(x)
 

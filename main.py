@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from diffusion_model import DiffusionModel
+from image_generator import ImageGenerator
+from display import display
 
 IMAGE_SIZE = 64
 BATCH_SIZE = 64
@@ -11,10 +14,10 @@ EMA = 0.999
 LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-4
 EPOCHS = 50
-
+NUM_DIFFUSION_STEPS=20
 
 train_data = keras.utils.image_dataset_from_directory(
-    "../data/flower-dataset/dataset",
+    "data/flower-dataset/dataset",
     labels=None,
     image_size=(IMAGE_SIZE, IMAGE_SIZE),
     batch_size=None,
@@ -31,4 +34,18 @@ train_data = train_data.map(preprocess_images)
 train_data = train_data.repeat(DATASET_REPETITIONS)
 train_data = train_data.batch(BATCH_SIZE, drop_remainder=True)
 
+from unet_model import create_unet_model
+network = create_unet_model(IMAGE_SIZE, 2, [32, 64, 96, 128], NOISE_EMBEDDING_SIZE)
+network.summary()
 
+model = DiffusionModel(image_size=IMAGE_SIZE, batch_size=BATCH_SIZE, ema_value=EMA, noise_embedding_size=NOISE_EMBEDDING_SIZE)
+model.normalizer.adapt(train_data)
+
+model.compile(optimizer=keras.optimizers.AdamW(learning_rate=LEARNING_RATE, weight_decay=WEIGHT_DECAY), loss=keras.losses.mean_absolute_error)
+
+image_generator = ImageGenerator(num_img=100, num_diffusion_steps=NUM_DIFFUSION_STEPS)
+model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose='auto')
+
+generated_images = model.generate(num_images=100, diffusion_steps=NUM_DIFFUSION_STEPS).numpy()
+
+display(generated_images, save_to='./output/final_generateds_images.png')

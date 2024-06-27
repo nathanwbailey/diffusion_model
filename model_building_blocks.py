@@ -40,7 +40,7 @@ class ResidualBlock(keras.layers.Layer):
 class DownBlock(keras.layers.Layer):
     def __init__(self, block_depth: int, width: int, **kwargs: Any) -> None:
         super().__init__()
-        self.residual_blocks = [ResidualBlock(width, **kwargs) for _ in block_depth]
+        self.residual_blocks = [ResidualBlock(width, **kwargs) for _ in range(block_depth)]
         self.average_pool = keras.layers.AveragePooling2D(pool_size=2)
 
     def call(self, input: tf.Tensor) -> tuple[tf.Tensor, list[tf.Tensor]]:
@@ -48,7 +48,7 @@ class DownBlock(keras.layers.Layer):
         skips = []
         for residual in self.residual_blocks:
             x = residual(x)
-            skips.append(x)
+            skips.append(tf.identity(x))
         x = self.average_pool(x)
         return x, skips
 
@@ -56,7 +56,7 @@ class DownBlock(keras.layers.Layer):
 class UpBlock(keras.layers.Layer):
     def __init__(self, block_depth: int, width: int, **kwargs: Any) -> None:
         super().__init__()
-        self.residual_blocks = [ResidualBlock(width, **kwargs) for _ in block_depth]
+        self.residual_blocks = [ResidualBlock(width, **kwargs) for _ in range(block_depth)]
         self.up_sampling = keras.layers.UpSampling2D(size=2, interpolation='bilinear')
         self.concat_layer = keras.layers.Concatenate()
 
