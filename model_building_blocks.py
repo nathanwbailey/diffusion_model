@@ -24,7 +24,7 @@ def sinusoidal_embedding(
 
 
 class ResidualBlock(keras.layers.Layer):
-    """Residual Block Layer"""
+    """Residual Block Layer."""
 
     def __init__(self, width: int, **kwargs: Any) -> None:
         """Init variables and layers."""
