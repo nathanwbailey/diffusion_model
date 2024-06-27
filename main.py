@@ -1,4 +1,6 @@
+import numpy as np
 import tensorflow as tf
+import tensorflow_datasets as tfds
 from tensorflow import keras
 
 from diffusion_model import DiffusionModel
@@ -38,8 +40,9 @@ train_data = train_data.repeat(DATASET_REPETITIONS)
 train_data = train_data.batch(BATCH_SIZE, drop_remainder=True)
 
 
-train_sample = train_data.take(1).get_single_element().numpy()
-display(train_sample, save_to='original_images.png')
+train_sample = np.array(list(tfds.as_numpy(train_data.unbatch().take(100))))
+print(train_sample.shape)
+display(train_sample, save_to="original_images.png")
 
 model = DiffusionModel(
     image_size=IMAGE_SIZE,
