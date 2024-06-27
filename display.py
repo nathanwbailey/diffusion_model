@@ -2,8 +2,14 @@ import matplotlib.pyplot as plt
 
 
 def display(
-    images, n=100, size=(10, 10), cmap="gray_r", as_type="float32", save_to=None
+    images,
+    n=100,
+    size=(10, 10),
+    cmap="gray_r",
+    as_type="float32",
+    save_to=None,
 ):
+    """Function to plot images."""
     if images.max() > 1.0:
         images = images / 255.0
     elif images.min() < 0.0:
@@ -14,7 +20,7 @@ def display(
 
     for i in range(n):
         axes[i].imshow(images[i].astype(as_type), cmap=cmap)
-        axes[i].axis('off')
+        axes[i].axis("off")
 
     if save_to:
         plt.savefig(save_to)
