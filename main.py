@@ -44,4 +44,4 @@ model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose=2)
 
 generated_images = model.generate(num_images=100, diffusion_steps=NUM_DIFFUSION_STEPS).numpy()
 
-display(generated_images, save_to='./output/final_generated_images.png')
+display(generated_images, save_to='final_generated_images.png')

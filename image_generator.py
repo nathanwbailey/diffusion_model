@@ -9,4 +9,4 @@ class ImageGenerator(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch: int, logs: None = None) -> None:
         generated_images = self.model.generate(num_images=self.num_img, diffusion_steps=self.num_diffusion_steps).numpy()
-        display(generated_images, save_to=f"./output/generated_image_{epoch}.png")
+        display(generated_images, save_to=f"./output/generated_image_epoch_{epoch}.png")
