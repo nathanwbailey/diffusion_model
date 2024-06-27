@@ -37,6 +37,10 @@ train_data = train_data.map(preprocess_images)
 train_data = train_data.repeat(DATASET_REPETITIONS)
 train_data = train_data.batch(BATCH_SIZE, drop_remainder=True)
 
+
+train_sample = train_data.take(1).get_single_element().numpy()
+display(train_sample, save_to='original_images.png')
+
 model = DiffusionModel(
     image_size=IMAGE_SIZE,
     batch_size=BATCH_SIZE,
