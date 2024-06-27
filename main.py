@@ -6,7 +6,7 @@ from image_generator import ImageGenerator
 from display import display
 
 IMAGE_SIZE = 64
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 DATASET_REPETITIONS = 5
 NOISE_EMBEDDING_SIZE = 32
 
@@ -40,8 +40,8 @@ model.compile(optimizer=keras.optimizers.AdamW(learning_rate=LEARNING_RATE, weig
 model.network.summary()
 
 image_generator = ImageGenerator(num_img=100, num_diffusion_steps=NUM_DIFFUSION_STEPS)
-model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose='auto')
+model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose=2)
 
 generated_images = model.generate(num_images=100, diffusion_steps=NUM_DIFFUSION_STEPS).numpy()
 
-display(generated_images, save_to='./output/final_generateds_images.png')
+display(generated_images, save_to='./output/final_generated_images.png')

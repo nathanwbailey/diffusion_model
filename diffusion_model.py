@@ -40,12 +40,12 @@ class DiffusionModel(keras.models.Model):
         # Timesteps are float values between 0 and 1
         # Start from final step t (1) and work backwards
         for step in range(diffusion_steps):
-            diffusion_times = tf.ones(num_images, 1, 1, 1) - step * step_size
+            diffusion_times = tf.ones((num_images, 1, 1, 1)) - step * step_size
             noise_rates, signal_rates = self.diffusion_schedule(diffusion_times)
             pred_noises, pred_images = self.denoise(current_images, noise_rates, signal_rates)
             next_diffusion_times = diffusion_times - step_size
             next_noise_rates, next_signal_rates = self.diffusion_schedule(next_diffusion_times)
-            current_imges = (next_signal_rates * pred_images + next_noise_rates * pred_noises)
+            current_images = (next_signal_rates * pred_images + next_noise_rates * pred_noises)
         return pred_images
 
     def generate(self, num_images: int, diffusion_steps: int, initial_noise: tf.Tensor | None = None) -> tf.Tensor:
@@ -57,7 +57,7 @@ class DiffusionModel(keras.models.Model):
 
     def train_step(self, images: tf.Tensor) -> dict[str, tf.Tensor]:
         images = self.normalizer(images, training=True)
-        noises = tf.random.normal(shape=(self.batch_size, self.image_size, self.image_Size, 3))
+        noises = tf.random.normal(shape=(self.batch_size, self.image_size, self.image_size, 3))
 
         #Generate an image x(t) at a random timestep t
         diffusion_times = tf.random.uniform(shape=(self.batch_size, 1, 1, 1), minval=0.0, maxval=1.0)
