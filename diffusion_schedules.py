@@ -24,5 +24,5 @@ def offset_cosine_diffusion_schedule(diffusion_times: tf.Tensor) -> tuple[tf.Ten
     diffusion_angles = start_angle + diffusion_times * (end_angle - start_angle)
     signal_rates = tf.cos(diffusion_angles)
     noise_rates = tf.sin(diffusion_angles)
-    return signal_rates, noise_rates
+    return noise_rates, signal_rates
 

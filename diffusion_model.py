@@ -42,7 +42,7 @@ class DiffusionModel(keras.models.Model):
         for step in range(diffusion_steps):
             diffusion_times = tf.ones((num_images, 1, 1, 1)) - step * step_size
             noise_rates, signal_rates = self.diffusion_schedule(diffusion_times)
-            pred_noises, pred_images = self.denoise(current_images, noise_rates, signal_rates)
+            pred_noises, pred_images = self.denoise(current_images, noise_rates, signal_rates, training=False)
             next_diffusion_times = diffusion_times - step_size
             next_noise_rates, next_signal_rates = self.diffusion_schedule(next_diffusion_times)
             current_images = (next_signal_rates * pred_images + next_noise_rates * pred_noises)

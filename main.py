@@ -6,14 +6,14 @@ from image_generator import ImageGenerator
 from display import display
 
 IMAGE_SIZE = 64
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 DATASET_REPETITIONS = 5
 NOISE_EMBEDDING_SIZE = 32
 
 EMA = 0.999
 LEARNING_RATE = 1e-3
 WEIGHT_DECAY = 1e-4
-EPOCHS = 50
+EPOCHS = 100
 NUM_DIFFUSION_STEPS=20
 
 train_data = keras.utils.image_dataset_from_directory(
@@ -37,7 +37,7 @@ train_data = train_data.batch(BATCH_SIZE, drop_remainder=True)
 model = DiffusionModel(image_size=IMAGE_SIZE, batch_size=BATCH_SIZE, ema_value=EMA, noise_embedding_size=NOISE_EMBEDDING_SIZE)
 model.normalizer.adapt(train_data)
 model.compile(optimizer=keras.optimizers.AdamW(learning_rate=LEARNING_RATE, weight_decay=WEIGHT_DECAY), loss=keras.losses.mean_absolute_error)
-model.network.summary()
+model.network.summary(expand_nested=True)
 
 image_generator = ImageGenerator(num_img=100, num_diffusion_steps=NUM_DIFFUSION_STEPS)
 model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose=2)
