@@ -34,14 +34,10 @@ train_data = train_data.map(preprocess_images)
 train_data = train_data.repeat(DATASET_REPETITIONS)
 train_data = train_data.batch(BATCH_SIZE, drop_remainder=True)
 
-from unet_model import create_unet_model
-network = create_unet_model(IMAGE_SIZE, 2, [32, 64, 96, 128], NOISE_EMBEDDING_SIZE)
-network.summary()
-
 model = DiffusionModel(image_size=IMAGE_SIZE, batch_size=BATCH_SIZE, ema_value=EMA, noise_embedding_size=NOISE_EMBEDDING_SIZE)
 model.normalizer.adapt(train_data)
-
 model.compile(optimizer=keras.optimizers.AdamW(learning_rate=LEARNING_RATE, weight_decay=WEIGHT_DECAY), loss=keras.losses.mean_absolute_error)
+model.network.summary()
 
 image_generator = ImageGenerator(num_img=100, num_diffusion_steps=NUM_DIFFUSION_STEPS)
 model.fit(train_data, epochs=EPOCHS, callbacks=[image_generator], verbose='auto')
