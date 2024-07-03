@@ -12,6 +12,7 @@ The main code is located in the following files:
 * model.py - implements the diffusion model
 * model_building_blocks.py - residual block, Up Block, Down block and sinusoidal embedding to use in the network
 * unet_model.py - implements the UNET network for use in the diffusion model
+* diffusion_schedules.py - implements various diffusion schedules for training and generating
 * image_generator.py - Keras callback to plot images whilst training
 * display.py - helper function to plot images
 * lint.sh - runs linters on the code
